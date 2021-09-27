@@ -30,7 +30,6 @@ class GrcWrkBase {
     for (const key of extractPublicMethods(this)) {
       if (skippedMethods.includes(key)) continue // disallow calling reseverd methods
       if (key.startsWith('_')) continue // disallow calling methods that start with _ (private standard naming)
-      if (typeof this[key] !== 'function') continue
 
       this._actions.set(key, true)
     }

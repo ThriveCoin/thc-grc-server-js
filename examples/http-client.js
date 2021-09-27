@@ -23,7 +23,6 @@ peer.request('rest:sample:wrk', pingReq, { timeout: 10000 }, (err, res) => {
   console.log('pong', res)
 })
 
-
 const timeReq = {
   action: 'getTime',
   args: []
