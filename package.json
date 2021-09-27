@@ -1,0 +1,33 @@
+{
+  "name": "thc-grc-server",
+  "version": "1.0.0",
+  "description": "grenache worker base for nodejs",
+  "main": "index.js",
+  "scripts": {
+    "lint": "standard",
+    "format": "standard --fix",
+    "test": "npm run lint"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ThriveCoin/thc-grc-server-js.git"
+  },
+  "keywords": [
+    "grc",
+    "grenache",
+    "rpc"
+  ],
+  "author": "vigan.abd",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ThriveCoin/thc-grc-server-js/issues"
+  },
+  "homepage": "https://github.com/ThriveCoin/thc-grc-server-js#readme",
+  "dependencies": {
+    "grenache-nodejs-http": "git+https://github.com/bitfinexcom/grenache-nodejs-http.git",
+    "grenache-nodejs-link": "git+https://github.com/bitfinexcom/grenache-nodejs-link.git"
+  },
+  "devDependencies": {
+    "standard": "^16.0.3"
+  }
+}
