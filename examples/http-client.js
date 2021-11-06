@@ -1,36 +1,18 @@
 'use strict'
 
-const Link = require('grenache-nodejs-link')
-const { PeerRPCClient } = require('grenache-nodejs-http')
+const { GrcHttpClient } = require('thc-grc-client')
 
-const link = new Link({
-  grape: 'http://127.0.0.1:30001'
-})
-link.start()
+const main = async () => {
+  const client = new GrcHttpClient({
+    grape: 'http://127.0.0.1:30001'
+  })
+  client.start()
 
-const peer = new PeerRPCClient(link, {})
-peer.init()
+  const pingRes = await client.request('rest:sample:wrk', 'ping', ['john', 'hello'])
+  console.log('ping result', pingRes)
 
-const pingReq = {
-  action: 'ping',
-  args: ['john', 'hello']
+  const timeRes = await client.request('rest:sample:wrk', 'getTime', [])
+  console.log('time result', timeRes)
 }
-peer.request('rest:sample:wrk', pingReq, { timeout: 10000 }, (err, res) => {
-  if (err) {
-    console.error(err)
-    process.exit(-1)
-  }
-  console.log('pong', res)
-})
 
-const timeReq = {
-  action: 'getTime',
-  args: []
-}
-peer.request('rest:sample:wrk', timeReq, { timeout: 10000 }, (err, res) => {
-  if (err) {
-    console.error(err)
-    process.exit(-1)
-  }
-  console.log('time', res)
-})
+main().catch(console.error)

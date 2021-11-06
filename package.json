@@ -28,6 +28,7 @@
     "grenache-nodejs-link": "git+https://github.com/bitfinexcom/grenache-nodejs-link.git"
   },
   "devDependencies": {
-    "standard": "^16.0.3"
+    "standard": "^16.0.3",
+    "thc-grc-client": "git+https://github.com/ThriveCoin/thc-grc-client-js.git"
   }
 }

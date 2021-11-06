@@ -27,26 +27,18 @@ await wrk.start()
 
 Then you could call your method through a sample client script like this:
 ```js
-const Link = require('grenache-nodejs-link')
-const { PeerRPCClient } = require('grenache-nodejs-http')
+const { GrcHttpClient } = require('thc-grc-client')
 
-const link = new Link({ grape: 'http://127.0.0.1:30001' })
-link.start()
-
-const peer = new PeerRPCClient(link, {})
-peer.init()
-
-const req = {
-  action: 'add', // method that you want to invoike
-  args: [1, 2] // arguments
-}
-peer.request('my_cal_wrk', req, {}, (err, res) => {
-  if (err) {
-    console.error(err)
-    process.exit(-1)
-  }
-  console.log('res', res) // 3
+const client = new GrcHttpClient({
+  grape: 'http://127.0.0.1:30001'
 })
+client.start()
+
+const pingRes = await client.request('rest:sample:wrk', 'ping', ['john', 'hello'])
+console.log('ping result', pingRes)
+
+const timeRes = await client.request('rest:sample:wrk', 'getTime', [])
+console.log('time result', timeRes)
 ```
 
 P.S. it's important to note that any method that starts with `_` is not publicly available through RPC,
