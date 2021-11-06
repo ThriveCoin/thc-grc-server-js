@@ -11,14 +11,16 @@ class GrcWrkBase {
    * @param {string} opts.grape - Grape URL
    * @param {number} [opts.announce] - Grc announce interval
    * @param {Object} [opts.conf] - Worker config
+   * @param {string} [opts.env] - Worker environment
    */
-  constructor ({ name, port, grape, announce = 15000, conf = {} }) {
+  constructor ({ name, port, grape, announce = 15000, conf = {}, env = 'development' }) {
     this._link = new Link({ grape })
 
     this._name = name
     this._port = port
     this._announce = announce
-    this.conf = conf
+    this._conf = conf
+    this._env = env
   }
 
   async start () {
