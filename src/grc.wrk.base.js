@@ -10,13 +10,15 @@ class GrcWrkBase {
    * @param {number} opts.port - Grc service port
    * @param {string} opts.grape - Grape URL
    * @param {number} [opts.announce] - Grc announce interval
+   * @param {Object} [opts.conf] - Worker config
    */
-  constructor ({ name, port, grape, announce = 15000 }) {
+  constructor ({ name, port, grape, announce = 15000, conf = {} }) {
     this._link = new Link({ grape })
 
     this._name = name
     this._port = port
     this._announce = announce
+    this.conf = conf
   }
 
   async start () {

@@ -11,9 +11,10 @@ class GrcHttpWrk extends GrcWrkBase {
    * @param {string} opts.grape - Grape URL
    * @param {number} [opts.timeout] - Grc call timeout
    * @param {number} [opts.announce] - Grc announce interval
+   * @param {Object} [opts.conf] - Worker config
    */
-  constructor ({ name, port, grape, timeout = 30000, announce = 15000 }) {
-    super({ name, port, grape, announce })
+  constructor ({ name, port, grape, timeout = 30000, announce = 15000, conf = {} }) {
+    super({ name, port, grape, announce, conf })
 
     this._peerServer = new PeerRPCServer(this._link, { timeout })
   }
