@@ -65,6 +65,7 @@ class GrcWrkBase {
 
       const { action, args } = payload
       if (!this._actions.has(action)) throw new Error('ERR_GRC_ACTION_NOT_FOUND')
+      if (!Array.isArray(args)) throw new Error('ERR_GRC_ARGS_INVALID')
 
       const resp = await this[action](...args)
       handler.reply(null, resp)
