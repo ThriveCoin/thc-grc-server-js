@@ -1,5 +1,5 @@
 {
-  "name": "thc-grc-server",
+  "name": "@thrivecoin/grc-server",
   "version": "1.0.0",
   "description": "grenache worker base for nodejs",
   "main": "index.js",
