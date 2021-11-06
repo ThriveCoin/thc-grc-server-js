@@ -6,6 +6,7 @@
   "scripts": {
     "lint": "standard",
     "format": "standard --fix",
+    "prepare": "husky install",
     "test": "npm run lint"
   },
   "repository": {
@@ -28,7 +29,8 @@
     "grenache-nodejs-link": "git+https://github.com/bitfinexcom/grenache-nodejs-link.git"
   },
   "devDependencies": {
-    "standard": "^16.0.3",
-    "thc-grc-client": "git+https://github.com/ThriveCoin/thc-grc-client-js.git"
+    "@thrivecoin/grc-client": "git+https://github.com/ThriveCoin/thc-grc-client-js.git",
+    "husky": "^7.0.4",
+    "standard": "^16.0.3"
   }
 }

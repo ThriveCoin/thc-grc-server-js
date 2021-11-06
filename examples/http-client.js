@@ -1,6 +1,6 @@
 'use strict'
 
-const { GrcHttpClient } = require('thc-grc-client')
+const { GrcHttpClient } = require('@thrivecoin/grc-client')
 
 const main = async () => {
   const client = new GrcHttpClient({
