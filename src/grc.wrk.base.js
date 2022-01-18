@@ -70,6 +70,7 @@ class GrcWrkBase {
       const resp = await this[action](...args)
       handler.reply(null, resp)
     } catch (err) {
+      console.error(new Date().toISOString(), err)
       handler.reply(err)
     }
   }
