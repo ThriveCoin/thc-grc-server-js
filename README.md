@@ -3,6 +3,7 @@
 This package provides base classes for grenache server on node js through different transport layers.
 Currently it supports the following transport layers:
 - Http transport layer
+- Ws transport layer
 
 ## How to use
 
