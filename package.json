@@ -27,7 +27,8 @@
   "homepage": "https://github.com/ThriveCoin/thc-grc-server-js#readme",
   "dependencies": {
     "grenache-nodejs-http": "git+https://github.com/bitfinexcom/grenache-nodejs-http.git",
-    "grenache-nodejs-link": "git+https://github.com/bitfinexcom/grenache-nodejs-link.git"
+    "grenache-nodejs-link": "git+https://github.com/bitfinexcom/grenache-nodejs-link.git",
+    "grenache-nodejs-ws": "git+https://github.com/bitfinexcom/grenache-nodejs-ws.git"
   },
   "devDependencies": {
     "@thrivecoin/grc-client": "git+https://github.com/ThriveCoin/thc-grc-client-js.git",
