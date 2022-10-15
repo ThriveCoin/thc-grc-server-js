@@ -12,13 +12,17 @@ class GrcWrkMultiTransport extends GrcWrkBase {
    * @param {number} [opts.announce] - Grc announce interval
    * @param {Object} [opts.conf] - Worker config
    * @param {string} [opts.env] - Worker environment
+   * @param {string[]} opts.prefixes - Worker transport service name prefixes, should match number of ports
    */
-  constructor ({ name, ports, grape, announce = 15000, conf = {}, env = 'development' }) {
+  constructor ({ name, ports, grape, announce = 15000, conf = {}, env = 'development', prefixes }) {
     super({ name, port: ports[0], grape, announce, conf, env })
 
     this._ports = ports
+    this._prefixes = prefixes
     this._peerServers = [] // should be populated on extended class
     this._services = [] // shouldn't be touched on extended class
+
+    this._names = this._prefixes.map(prefix => `${prefix}:${this._name}`)
 
     delete this._port
     delete this._service
@@ -43,6 +47,7 @@ class GrcWrkMultiTransport extends GrcWrkBase {
 
     for (let i = 0; i < this._ports.length; i++) {
       const port = this._ports[i]
+      const serviceName = this._names[i]
 
       const peerServer = this._peerServers[i]
       peerServer.init()
@@ -50,9 +55,9 @@ class GrcWrkMultiTransport extends GrcWrkBase {
       service.listen(port)
 
       await new Promise((resolve, reject) => {
-        this._link.announce(this._name, port, {}, (err) => err ? reject(err) : resolve())
+        this._link.announce(serviceName, port, {}, (err) => err ? reject(err) : resolve())
       })
-      this._link.startAnnouncing(this._name, port, { interval: this._announce })
+      this._link.startAnnouncing(serviceName, port, { interval: this._announce })
 
       service.on('request', this.handler.bind(this))
 
@@ -60,8 +65,27 @@ class GrcWrkMultiTransport extends GrcWrkBase {
     }
   }
 
+  async handler (rid, serviceName, payload, handler) {
+    try {
+      if (!this._names.includes(serviceName)) throw new Error('ERR_GRC_SERVICE_NOT_SUPPORTED')
+      if (typeof payload !== 'object') throw new Error('ERR_GRC_BAD_REQUEST')
+
+      const { action, args } = payload
+      if (!this._actions.has(action)) throw new Error('ERR_GRC_ACTION_NOT_FOUND')
+      if (!Array.isArray(args)) throw new Error('ERR_GRC_ARGS_INVALID')
+
+      const resp = await this[action](...args)
+      handler.reply(null, resp)
+    } catch (err) {
+      console.error(new Date().toISOString(), err)
+      handler.reply(err)
+    }
+  }
+
   stop () {
-    this._link.stopAnnouncing(this._name, this._port)
+    for (const serviceName of this._names) {
+      this._link.stopAnnouncing(serviceName, this._port)
+    }
     this._services.forEach(service => service.stop())
     this._peerServers.forEach(peerServer => peerServer.stop())
     this._link.stop()

@@ -7,12 +7,12 @@ const createGrapes = require('bfx-svc-test-helper/grapes')
 const mockdate = require('mockdate')
 const sinon = require('sinon')
 const utils = require('util')
-const { GrcHttpClient } = require('@thrivecoin/grc-client')
+const { GrcHttpClient, GrcWsClient } = require('@thrivecoin/grc-client')
 const { ThcHttpClient } = require('@thrivecoin/http-client')
-const { GrcHttpWrk } = require('../')
+const { GrcHttpWsWrk } = require('../')
 
-class SampleWrk extends GrcHttpWrk {
-  async ping (from, message) {
+class SampleWrk extends GrcHttpWsWrk {
+  ping (from, message) {
     return { to: from, message }
   }
 
@@ -29,13 +29,14 @@ class SampleWrk extends GrcHttpWrk {
   }
 }
 
-describe('grc.wrk.base.js tests', () => {
+describe('grc.http.ws.wrk.js tests', () => {
   const grape = 'http://127.0.0.1:30001'
   const svcName = 'rest:sample:wrk'
-  const grcClient = new GrcHttpClient({ grape })
+  const grcHttpClient = new GrcHttpClient({ grape })
+  const grcWsClient = new GrcWsClient({ grape })
   const httpClient = new ThcHttpClient({ baseUrl: 'http://127.0.0.1:7070' })
   const grapes = createGrapes({})
-  const wrk = new SampleWrk({ name: svcName, port: 7070, grape })
+  const wrk = new SampleWrk({ name: svcName, ports: [7070, 7071], grape })
 
   let errLog = ''
   let errLogStub = null
@@ -44,7 +45,8 @@ describe('grc.wrk.base.js tests', () => {
     this.timeout(5000)
 
     await grapes.start()
-    grcClient.start()
+    grcHttpClient.start()
+    grcWsClient.start()
     await wrk.start()
 
     mockdate.set(1665843499038)
@@ -60,7 +62,8 @@ describe('grc.wrk.base.js tests', () => {
   after(async function () {
     this.timeout(5000)
 
-    grcClient.stop()
+    grcHttpClient.stop()
+    grcWsClient.stop()
     wrk.stop()
     await grapes.stop()
 
@@ -68,19 +71,30 @@ describe('grc.wrk.base.js tests', () => {
     errLogStub.restore()
   })
 
-  it('should send and receive response', async () => {
-    const res = await grcClient.request(svcName, 'ping', ['john', 'hi'])
+  it('should send request and receive response from http transport layer', async () => {
+    const res = await grcHttpClient.request(`http:${svcName}`, 'ping', ['john', 'hi'])
     assert.deepStrictEqual(res, { to: 'john', message: 'hi' })
   })
 
-  it('should work actions without params', async () => {
-    const res = await grcClient.request(svcName, 'getTime', [])
-    assert.strictEqual(res, 1665843499038)
+  it('should send request and receive response from ws transport layer', async () => {
+    const res = await grcWsClient.request(`ws:${svcName}`, 'ping', ['john', 'hi'])
+    assert.deepStrictEqual(res, { to: 'john', message: 'hi' })
+  })
+
+  it('should fail on wrong transport layer', async () => {
+    await assert.rejects(
+      () => grcHttpClient.request(`ws:${svcName}`, 'ping', ['john', 'hi']),
+      (err) => {
+        assert.ok(err instanceof Error)
+        assert.strictEqual(err.message, 'ERR_REPLY_EMPTY')
+        return true
+      }
+    )
   })
 
   it('should handle errors', async () => {
     await assert.rejects(
-      () => grcClient.request(svcName, 'calc', []),
+      () => grcHttpClient.request(`http:${svcName}`, 'calc', []),
       (err) => {
         assert.ok(err instanceof Error)
         assert.strictEqual(err.message, 'SIMULATE')
@@ -92,7 +106,7 @@ describe('grc.wrk.base.js tests', () => {
 
   it('should fail when invalid payload is provided', async () => {
     await assert.rejects(
-      () => grcClient.request(svcName, 'calc'),
+      () => grcHttpClient.request(`http:${svcName}`, 'calc'),
       (err) => {
         assert.ok(err instanceof Error)
         assert.strictEqual(err.message, 'ERR_GRC_ARGS_INVALID')
@@ -104,7 +118,7 @@ describe('grc.wrk.base.js tests', () => {
 
   it('should hide private methods', async () => {
     await assert.rejects(
-      () => grcClient.request(svcName, '_privCalc'),
+      () => grcHttpClient.request(`http:${svcName}`, '_privCalc'),
       (err) => {
         assert.ok(err instanceof Error)
         assert.strictEqual(err.message, 'ERR_GRC_ACTION_NOT_FOUND')
@@ -135,7 +149,7 @@ describe('grc.wrk.base.js tests', () => {
     const { body: res } = await httpClient.post('', {
       body: [
         '675830ae-0498-4036-9d79-92bb1d1f9803',
-        svcName,
+        `http:${svcName}`,
         'ping'
       ],
       encoding: 'json'

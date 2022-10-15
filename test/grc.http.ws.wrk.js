@@ -40,12 +40,23 @@ describe('grc.http.ws.wrk.js tests', () => {
   })
 
   it('should send request and receive response from http transport layer', async () => {
-    const res = await httpClient.request(svcName, 'ping', ['john', 'hi'])
+    const res = await httpClient.request(`http:${svcName}`, 'ping', ['john', 'hi'])
     assert.deepStrictEqual(res, { to: 'john', message: 'hi' })
   })
 
   it('should send request and receive response from ws transport layer', async () => {
-    const res = await wsClient.request(svcName, 'ping', ['john', 'hi'])
+    const res = await wsClient.request(`ws:${svcName}`, 'ping', ['john', 'hi'])
     assert.deepStrictEqual(res, { to: 'john', message: 'hi' })
+  })
+
+  it('should fail on wrong transport layer', async () => {
+    await assert.rejects(
+      () => httpClient.request(`ws:${svcName}`, 'ping', ['john', 'hi']),
+      (err) => {
+        assert.ok(err instanceof Error)
+        assert.strictEqual(err.message, 'ERR_REPLY_EMPTY')
+        return true
+      }
+    )
   })
 })

@@ -14,9 +14,12 @@ class GrcHttpWsWrk extends GrcWrkMultiTransport {
    * @param {number} [opts.announce] - Grc announce interval
    * @param {Object} [opts.conf] - Worker config
    * @param {string} [opts.env] - Worker environment
+   * @param {string[]} [opts.prefixes] - Worker transport service name prefixes, should match number of ports
    */
-  constructor ({ name, ports, grape, timeout = 30000, announce = 15000, conf = {}, env = 'development' }) {
-    super({ name, ports, grape, announce, conf, env })
+  constructor ({
+    name, ports, grape, timeout = 30000, announce = 15000, conf = {}, env = 'development', prefixes = ['http', 'ws']
+  }) {
+    super({ name, ports, grape, announce, conf, env, prefixes })
 
     this._peerServers.push(
       new HttpPeerRPCServer(this._link, { timeout }),
