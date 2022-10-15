@@ -8,7 +8,7 @@ class GrcHttpWsWrk extends GrcWrkMultiTransport {
   /**
    * @param {Object} opts
    * @param {string} opts.name - Grc service name
-   * @param {number} opts.ports - Grc service ports
+   * @param {number[]} opts.ports - Grc service ports
    * @param {string} opts.grape - Grape URL
    * @param {number} [opts.timeout] - Grc call timeout
    * @param {number} [opts.announce] - Grc announce interval
